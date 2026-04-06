@@ -1,4 +1,4 @@
-module github.com/crash-reporter/crash-reporter-go
+module github.com/thomasbruninx/crash-reporter-go
 
 go 1.23
 
