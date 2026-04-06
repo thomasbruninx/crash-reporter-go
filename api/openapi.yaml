@@ -1,0 +1,392 @@
+openapi: 3.1.0
+info:
+  description: API for receiving and managing crash reports.
+  title: Crash Reporter API
+  version: 0.1.0
+servers:
+- url: /
+paths:
+  /api/v1/instance:
+    post:
+      operationId: create_instance_api_v1_instance_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstanceCreate'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InstanceCreateResponse'
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create Instance
+  /api/v1/report:
+    post:
+      operationId: create_report_api_v1_report_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportCreate'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportOut'
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Create Report
+components:
+  schemas:
+    HTTPValidationError:
+      example:
+        detail:
+        - msg: msg
+          loc:
+          - ValidationError_loc_inner
+          - ValidationError_loc_inner
+          input: ""
+          ctx: "{}"
+          type: type
+        - msg: msg
+          loc:
+          - ValidationError_loc_inner
+          - ValidationError_loc_inner
+          input: ""
+          ctx: "{}"
+          type: type
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+      title: HTTPValidationError
+    InstanceCreate:
+      example:
+        notes: notes
+        project_id: project_id
+      properties:
+        project_id:
+          title: Project Id
+          type: string
+        notes:
+          nullable: true
+          type: string
+      required:
+      - project_id
+      title: InstanceCreate
+    InstanceCreateResponse:
+      example:
+        instance_uuid: instance_uuid
+        token: token
+      properties:
+        instance_uuid:
+          title: Instance Uuid
+          type: string
+        token:
+          title: Token
+          type: string
+      required:
+      - instance_uuid
+      - token
+      title: InstanceCreateResponse
+    InstanceOut:
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        project_uuid:
+          title: Project Uuid
+          type: string
+        notes:
+          title: Notes
+          type: string
+      required:
+      - notes
+      - project_uuid
+      - uuid
+      title: InstanceOut
+    InstanceQueryResponse:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/InstanceOut'
+          type: array
+        total:
+          title: Total
+          type: integer
+        page:
+          title: Page
+          type: integer
+        resultsperpage:
+          title: Resultsperpage
+          type: integer
+      required:
+      - items
+      - page
+      - resultsperpage
+      - total
+      title: InstanceQueryResponse
+    InstanceUpdate:
+      properties:
+        notes:
+          title: Notes
+          type: string
+      required:
+      - notes
+      title: InstanceUpdate
+    LoginRequest:
+      properties:
+        username:
+          title: Username
+          type: string
+        password:
+          title: Password
+          type: string
+      required:
+      - password
+      - username
+      title: LoginRequest
+    ProjectCreate:
+      properties:
+        project_id:
+          pattern: "^[a-z0-9_-]+$"
+          title: Project Id
+          type: string
+        name:
+          title: Name
+          type: string
+      required:
+      - name
+      - project_id
+      title: ProjectCreate
+    ProjectOut:
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        project_id:
+          title: Project Id
+          type: string
+        name:
+          title: Name
+          type: string
+      required:
+      - name
+      - project_id
+      - uuid
+      title: ProjectOut
+    ProjectQueryResponse:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/ProjectOut'
+          type: array
+        total:
+          title: Total
+          type: integer
+        page:
+          title: Page
+          type: integer
+        resultsperpage:
+          title: Resultsperpage
+          type: integer
+      required:
+      - items
+      - page
+      - resultsperpage
+      - total
+      title: ProjectQueryResponse
+    ProjectUpdate:
+      properties:
+        project_id:
+          nullable: true
+          pattern: "^[a-z0-9_-]+$"
+          type: string
+        name:
+          nullable: true
+          type: string
+      title: ProjectUpdate
+    ReportCreate:
+      example:
+        severity: severity
+        metadata:
+          key: ""
+        instance_uuid: instance_uuid
+      properties:
+        instance_uuid:
+          title: Instance Uuid
+          type: string
+        severity:
+          pattern: ^(low|medium|high|critical)$
+          title: Severity
+          type: string
+        metadata:
+          additionalProperties: true
+          title: Metadata
+          type: object
+      required:
+      - instance_uuid
+      - severity
+      title: ReportCreate
+    ReportOut:
+      example:
+        project_uuid: project_uuid
+        severity: severity
+        metadata:
+          key: ""
+        instance_uuid: instance_uuid
+        uuid: uuid
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        project_uuid:
+          title: Project Uuid
+          type: string
+        instance_uuid:
+          title: Instance Uuid
+          type: string
+        timestamp:
+          format: date-time
+          title: Timestamp
+          type: string
+        severity:
+          title: Severity
+          type: string
+        metadata:
+          additionalProperties: true
+          title: Metadata
+          type: object
+      required:
+      - instance_uuid
+      - metadata
+      - project_uuid
+      - severity
+      - timestamp
+      - uuid
+      title: ReportOut
+    ReportQueryResponse:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/ReportOut'
+          type: array
+        total:
+          title: Total
+          type: integer
+        page:
+          title: Page
+          type: integer
+        resultsperpage:
+          title: Resultsperpage
+          type: integer
+      required:
+      - items
+      - page
+      - resultsperpage
+      - total
+      title: ReportQueryResponse
+    ReportUpdate:
+      properties:
+        metadata:
+          additionalProperties: true
+          title: Metadata
+          type: object
+      title: ReportUpdate
+    TokenResponse:
+      properties:
+        access_token:
+          title: Access Token
+          type: string
+        token_type:
+          default: bearer
+          title: Token Type
+          type: string
+        expires_in_seconds:
+          title: Expires In Seconds
+          type: integer
+      required:
+      - access_token
+      - expires_in_seconds
+      title: TokenResponse
+    UserCreate:
+      properties:
+        username:
+          title: Username
+          type: string
+        password:
+          title: Password
+          type: string
+      required:
+      - password
+      - username
+      title: UserCreate
+    UserOut:
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        username:
+          title: Username
+          type: string
+      required:
+      - username
+      - uuid
+      title: UserOut
+    ValidationError:
+      example:
+        msg: msg
+        loc:
+        - ValidationError_loc_inner
+        - ValidationError_loc_inner
+        input: ""
+        ctx: "{}"
+        type: type
+      properties:
+        loc:
+          items:
+            $ref: '#/components/schemas/ValidationError_loc_inner'
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+        input: {}
+        ctx:
+          title: Context
+          type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ValidationError_loc_inner:
+      anyOf:
+      - type: string
+      - type: integer
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http
